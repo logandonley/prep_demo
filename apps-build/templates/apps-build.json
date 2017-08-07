@@ -1,0 +1,43 @@
+{
+  "openshift_clusters": [
+    {
+      "openshift_resources": {
+        "projects": [
+          {
+            "name": "{{project_name_prefix}}-pipeline",
+            "display_name": "{{project_name_prefix|capitalize}} Pipeline",
+            "environment_type": "build",
+            "templates": [
+              {
+                "filename": "files/apache-s2i-build-template.json",
+                "parameters": {
+                }
+              }
+            ]
+          },
+          {
+            "name": "{{project_name_prefix}}-dev",
+            "display_name": "{{project_name_prefix|capitalize}} Development",
+            "environment_type": "build",
+            "templates": [
+            ]
+          },
+          {
+            "name": "{{project_name_prefix}}-test",
+            "display_name": "{{project_name_prefix|capitalize}} Test",
+            "environment_type": "promotion",
+            "templates": [
+            ]
+          },
+          {
+            "name": "{{project_name_prefix}}-uat",
+            "display_name": "{{project_name_prefix|capitalize}} UAT",
+            "environment_type": "promotion",
+            "templates": [
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

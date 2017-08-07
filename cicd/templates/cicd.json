@@ -1,0 +1,32 @@
+{
+  "openshift_clusters": [
+    {
+      "openshift_resources": {
+        "projects": [
+          {
+            "name": "{{project_name_prefix}}-pipeline",
+            "display_name": "{{project_name_prefix|capitalize}} Pipeline",
+            "environment_type": "build",
+            "templates": [
+              {
+                "filename": "files/jenkins-s2i-template.json",
+                "parameters": {
+                  "SOURCE_REPOSITORY_URL": "https://github.com/logandonley/openshift-jenkins-s2i-config.git",
+                  "SOURCE_REPOSITORY_REF": "test",
+                  "NAME": "jenkins"
+                }
+              },
+              {
+                "name": "openshift//jenkins-ephemeral",
+                "parameters": {
+                  "NAMESPACE": "{{project_name_prefix}}-pipeline",
+                  "MEMORY_LIMIT": "2Gi"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

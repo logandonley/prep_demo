@@ -1,0 +1,67 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "adding-roles"
+  },
+  "objects": [
+    {
+      "apiVersion": "v1",
+      "kind": "Group",
+      "metadata": {
+        "name": "developers"
+      },
+      "users": [
+        "logan"
+      ]
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Group",
+      "metadata": {
+        "name": "admins"
+      },
+      "users": [
+        "developer"
+      ]
+    },
+    {
+      "apiVersion": "v1",
+      "groupNames": [
+        "developers"
+      ],
+      "kind": "RoleBinding",
+      "metadata": {
+        "name": "developer-edit"
+      },
+      "roleRef": {
+        "name": "edit"
+      },
+      "subjects": [
+        {
+          "kind": "Group",
+          "name": "developers"
+        }
+      ]
+    },
+    {
+      "apiVersion": "v1",
+      "groupNames": [
+        "admins"
+      ],
+      "kind": "RoleBinding",
+      "metadata": {
+        "name": "admins-rolebinding"
+      },
+      "roleRef": {
+        "name": "admin"
+      },
+      "subjects": [
+        {
+          "kind": "Group",
+          "name": "admins"
+        }
+      ]
+    }
+  ]
+}

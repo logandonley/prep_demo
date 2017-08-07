@@ -1,0 +1,201 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "annotations": {
+      "description": "HTTPD builder and sample application",
+      "iconClass": "icon-apache",
+      "tags": "quickstart,httpd,web"
+    },
+    "name": "httpd-quickstart-rhel"
+  },
+  "labels": {
+    "template": "httpd-quickstart-rhel"
+  },
+  "parameters": [
+    {
+      "description": "The name for the Apache HTTPD builder.",
+      "displayName": "Apache HTTPD builder name",
+      "name": "HTTPD_BUILDER_NAME",
+      "value": "s2i-httpd",
+      "required": true
+    },
+    {
+      "description": "Git source URI for HTTPD builder",
+      "displayName": "HTTPD builder source url",
+      "name": "HTTPD_BUILDER_SOURCE_REPOSITORY_URL",
+      "value": "https://github.com/redhat-cop/containers-quickstarts.git",
+      "required": true
+    },
+    {
+      "description": "HTTPD builder source branch/tag reference.",
+      "displayName": "HTTPD source branch/tag reference.",
+      "name": "HTTPD_BUILDER_SOURCE_REPOSITORY_REF",
+      "value": "master",
+      "required": false
+    },
+    {
+      "description": "Path within Git project to build containing the HTTPD builder; empty for root project directory.",
+      "displayName": "HTTPD builder context directory.",
+      "name": "HTTPD_BUILDER_CONTEXT_DIR",
+      "value": "s2i-httpd",
+      "required": false
+    },
+    {
+      "description": "The name for the HTTPD application.",
+      "displayName": "Apache application name",
+      "name": "HTTPD_APPLICATION_NAME",
+      "value": "httpd-app",
+      "required": true
+    },
+    {
+      "description": "Git source URI for HTTPD application",
+      "displayName": "HTTPD application source url",
+      "name": "HTTPD_APPLICATION_SOURCE_REPOSITORY_URL",
+      "value": "https://github.com/rht-labs/infographic.git",
+      "required": true
+    },
+    {
+      "description": "HTTPD application source branch/tag reference.",
+      "displayName": "HTTPD application source branch/tag reference.",
+      "name": "HTTPD_APPLICATION_SOURCE_REPOSITORY_REF",
+      "value": "master",
+      "required": false
+    },
+    {
+      "description": "Path within Git project to build containing the HTTPD application; empty for root project directory.",
+      "displayName": "HTTPD application context directory.",
+      "name": "HTTPD_APPLICATION_CONTEXT_DIR",
+      "value": "website",
+      "required": false
+    },
+    {
+      "name": "HTTPD_APPLICATION_HOSTNAME",
+      "displayName": "HTTPD application route hostname.",
+      "description": "Custom hostname for HTTPD service route.  Leave blank for default hostname, e.g.: \u003capplication-name\u003e-\u003cproject\u003e.\u003cdefault-domain-suffix\u003e"
+    }
+  ],
+  "objects": [
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "sclorg-httpd-container",
+        "labels": {
+          "build": "${HTTPD_BUILDER_NAME}"
+        }
+      },
+      "spec": {
+        "dockerImageRepository": "registry.access.redhat.com/rhscl/httpd-24-rhel7"
+      }
+    },
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${HTTPD_BUILDER_NAME}",
+        "labels": {
+          "build": "${HTTPD_BUILDER_NAME}"
+        }
+      }
+    },
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${HTTPD_APPLICATION_NAME}",
+        "labels": {
+          "application": "${HTTPD_APPLICATION_NAME}"
+        }
+      }
+    },
+    {
+      "kind": "BuildConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${HTTPD_BUILDER_NAME}",
+        "labels": {
+          "build": "${HTTPD_BUILDER_NAME}"
+        }
+      },
+      "spec": {
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          },
+          {
+            "type": "ImageChange",
+            "imageChange": {}
+          }
+        ],
+        "source": {
+          "type": "Git",
+          "git": {
+            "uri": "${HTTPD_BUILDER_SOURCE_REPOSITORY_URL}",
+            "ref": "${HTTPD_BUILDER_SOURCE_REPOSITORY_REF}"
+          },
+          "contextDir": "${HTTPD_BUILDER_CONTEXT_DIR}"
+        },
+        "strategy": {
+          "type": "Docker",
+          "dockerStrategy": {
+            "from": {
+              "kind": "ImageStreamTag",
+              "name": "sclorg-httpd-container:2.4"
+            }
+          }
+        },
+        "output": {
+          "to": {
+            "kind": "ImageStreamTag",
+            "name": "${HTTPD_BUILDER_NAME}:latest"
+          }
+        }
+      }
+    },
+    {
+      "kind": "BuildConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${HTTPD_APPLICATION_NAME}",
+        "labels": {
+          "application": "${HTTPD_APPLICATION_NAME}"
+        }
+      },
+      "spec": {
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          },
+          {
+            "type": "ImageChange",
+            "imageChange": {}
+          }
+        ],
+        "source": {
+          "type": "Git",
+          "git": {
+            "uri": "${HTTPD_APPLICATION_SOURCE_REPOSITORY_URL}",
+            "ref": "${HTTPD_APPLICATION_SOURCE_REPOSITORY_REF}"
+          },
+          "contextDir": "${HTTPD_APPLICATION_CONTEXT_DIR}"
+        },
+        "strategy": {
+          "type": "Source",
+          "sourceStrategy": {
+            "from": {
+              "kind": "ImageStreamTag",
+              "name": "${HTTPD_BUILDER_NAME}:latest"
+            }
+          }
+        },
+        "output": {
+          "to": {
+            "kind": "ImageStreamTag",
+            "name": "${HTTPD_APPLICATION_NAME}:latest"
+          }
+        }
+      }
+    }
+  ]
+}

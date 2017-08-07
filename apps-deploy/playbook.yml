@@ -11,7 +11,7 @@
   - include_vars:
       file: '../vars/project-names.json'
   - include_vars:
-      file: 'templates/cluster.json'
+      file: 'templates/apps-deploy.json'
 
   roles:
     - openshift-defaults
