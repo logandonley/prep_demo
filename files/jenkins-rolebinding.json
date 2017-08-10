@@ -1,0 +1,41 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "jenkins-rolebinding"
+  },
+  "objects": [
+    {
+      "apiVersion": "v1",
+      "kind": "RoleBinding",
+      "metadata": {
+        "name": "edit"
+      },
+      "roleRef": {
+        "name": "edit"
+      },
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "jenkins",
+          "namespace": "${PIPELINES_NAMESPACE}"
+        }
+      ],
+      "userNames": [
+        "system:serviceaccount:${PIPELINES_NAMESPACE}:jenkins"
+      ]
+    }
+  ],
+  "parameters": [
+    {
+      "name": "PIPELINES_NAMESPACE",
+      "displayName": "Pipeline Namespace",
+      "description": "This is the namespace where the Jenkins SA is located",
+      "required": true,
+      "value": "infographic-pipeline"
+    }
+  ],
+  "labels": {
+    "template": "jenkins-rolebinding"
+  }
+}

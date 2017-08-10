@@ -9,13 +9,9 @@
 
   pre_tasks:
   - include_vars:
-      dir: 'vars'
-      extensions:
-          - json
+      file: 'vars/project-names.json'
   - include_vars:
-      dir: 'templates'
-      extensions:
-          - json
+      file: 'templates/master.json'
 
   roles:
     - openshift-defaults

@@ -1,0 +1,95 @@
+{
+  "openshift_clusters": [
+    {
+      "openshift_resources": {
+        "projects": [
+          {
+            "name": "{{project_name_prefix}}-pipeline",
+            "display_name": "{{project_name_prefix|capitalize}} Pipeline",
+            "environment_type": "build",
+            "templates": [
+              {
+                "filename": "files/groups-and-roles.json"
+              },
+              {
+                "filename": "files/jenkins-s2i-template.json",
+                "parameters": {
+                  "SOURCE_REPOSITORY_URL": "https://github.com/logandonley/openshift-jenkins-s2i-config.git",
+                  "SOURCE_REPOSITORY_REF": "test",
+                  "NAME": "jenkins"
+                }
+              },
+              {
+                "name": "openshift//jenkins-ephemeral",
+                "parameters": {
+                  "NAMESPACE": "{{project_name_prefix}}-pipeline",
+                  "MEMORY_LIMIT": "2Gi"
+                }
+              },
+              {
+                "filename": "files/apache-s2i-build-template.json",
+              }
+            ]
+          },
+          {
+            "name": "{{project_name_prefix}}-dev",
+            "display_name": "{{project_name_prefix|capitalize}} Development",
+            "environment_type": "build",
+            "templates": [
+              {
+                "filename": "files/groups-and-roles.json"
+              },
+              {
+                "filename": "files/apache-s2i-deploy-template.json",
+                "parameters": {
+                  "HTTPD_APPLICATION_NAME": "httpd-app"
+                }
+              },
+              {
+                "filename": "files/jenkins-rolebinding.json",
+              }
+            ]
+          },
+          {
+            "name": "{{project_name_prefix}}-test",
+            "display_name": "{{project_name_prefix|capitalize}} Test",
+            "environment_type": "promotion",
+            "templates": [
+              {
+                "filename": "files/groups-and-roles.json"
+              },
+              {
+                "filename": "files/apache-s2i-deploy-template.json",
+                "parameters": {
+                  "HTTPD_APPLICATION_NAME": "httpd-app"
+                }
+              },
+              {
+                "filename": "files/jenkins-rolebinding.json",
+              }
+            ]
+          },
+          {
+            "name": "{{project_name_prefix}}-uat",
+            "display_name": "{{project_name_prefix|capitalize}} UAT",
+            "environment_type": "promotion",
+            "templates": [
+              {
+                "filename": "files/groups-and-roles.json"
+              },
+              {
+                "filename": "files/apache-s2i-deploy-template.json",
+                "parameters": {
+                  "HTTPD_APPLICATION_NAME": "httpd-app"
+                }
+              },
+              {
+                "filename": "files/jenkins-rolebinding.json",
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
