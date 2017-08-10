@@ -1,5 +1,5 @@
 ---
-- name: "Install OpenShift Objects"
+- name: "Setup demo"
   hosts: openshift
 
   vars:
@@ -9,9 +9,13 @@
 
   pre_tasks:
   - include_vars:
-      file: '../vars/project-names.json'
+      dir: 'vars'
+      extensions:
+          - json
   - include_vars:
-      file: 'templates/cluster.json'
+      dir: 'templates'
+      extensions:
+          - json
 
   roles:
     - openshift-defaults

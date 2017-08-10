@@ -12,7 +12,7 @@
         "name": "developers"
       },
       "users": [
-        "logan"
+        "developer"
       ]
     },
     {
@@ -22,7 +22,7 @@
         "name": "admins"
       },
       "users": [
-        "developer"
+        "admin"
       ]
     },
     {

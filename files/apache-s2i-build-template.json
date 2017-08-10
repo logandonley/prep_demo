@@ -52,7 +52,7 @@
       "description": "Git source URI for HTTPD application",
       "displayName": "HTTPD application source url",
       "name": "HTTPD_APPLICATION_SOURCE_REPOSITORY_URL",
-      "value": "https://github.com/rht-labs/infographic.git",
+      "value": "https://github.com/logandonley/infographic.git",
       "required": true
     },
     {
@@ -67,12 +67,19 @@
       "displayName": "HTTPD application context directory.",
       "name": "HTTPD_APPLICATION_CONTEXT_DIR",
       "value": "website",
-      "required": false
+      "required": true
     },
     {
       "name": "HTTPD_APPLICATION_HOSTNAME",
       "displayName": "HTTPD application route hostname.",
       "description": "Custom hostname for HTTPD service route.  Leave blank for default hostname, e.g.: \u003capplication-name\u003e-\u003cproject\u003e.\u003cdefault-domain-suffix\u003e"
+    },
+    {
+      "name": "GITHUB_WEBHOOK_SECRET",
+      "displayName": "GitHub Webhook Secret",
+      "description": "A secret string used to configure the GitHub webhook.",
+      "generate": "expression",
+      "from": "[a-zA-Z0-9]{40}"
     }
   ],
   "objects": [
@@ -107,6 +114,49 @@
         "labels": {
           "application": "${HTTPD_APPLICATION_NAME}"
         }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "BuildConfig",
+      "metadata": {
+        "labels": {
+          "build": "${HTTPD_APPLICATION_NAME}",
+          "name": "${HTTPD_APPLICATION_NAME}-pipeline"
+        },
+        "name": "${HTTPD_APPLICATION_NAME}-pipeline"
+      },
+      "spec": {
+        "nodeSelector": {},
+        "output": {},
+        "postCommit": {},
+        "resources": {},
+        "runPolicy": "Serial",
+        "source": {
+          "contextDir": "${HTTPD_APPLICATION_CONTEXT_DIR}",
+          "git": {
+            "ref": "${HTTPD_APPLICATION_SOURCE_REPOSITORY_REF}",
+            "uri": "${HTTPD_APPLICATION_SOURCE_REPOSITORY_URL}"
+          },
+          "type": "Git"
+        },
+        "strategy": {
+          "jenkinsPipelineStrategy": {
+            "jenkinsfilePath": "Jenkinsfile"
+          },
+          "type": "JenkinsPipeline"
+        },
+        "triggers": [
+          {
+            "github": {
+              "secret": "${PIPELINE_GITHUB_WEBHOOK_SECRET}"
+            },
+            "type": "GitHub"
+          },
+          {
+            "type": "ConfigChange"
+          }
+        ]
       }
     },
     {
